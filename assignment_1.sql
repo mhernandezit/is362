@@ -59,45 +59,32 @@ GROUP  BY planes.manufacturer
 ORDER  BY planes.manufacturer; 
 
 /*
-4. What was the lowest recorded temperature in 2013 for each origin airport, and how many delays were caused by the 
+4. What was the lowest recorded temperature in January 2013 for each origin airport, and how many delays were caused by the 
 low temperatures.  Provide enough information to analyze delay information by Manufacturer, Origin, and Tail number.
 Export the result set to CSV
 */
 
-WITH low_weather AS 
-( 
-         SELECT   Min(weather.temp) AS min_temp, 
-                  weather.origin, 
-                  weather.day, 
-                  weather.month 
-         FROM     weather 
-         WHERE    year = '2013' 
-         GROUP BY origin), flight_delays AS 
-( 
-       SELECT origin, 
-              f.tailnum, 
-              manufacturer, 
-              f.year, 
-              f.month, 
-              f.day, 
-              arr_delay 
-       FROM   flights f 
-       JOIN   planes p 
-       ON     f.tailnum = p.tailnum) 
-SELECT    low_weather.min_temp, 
-          low_weather.origin, 
-          flight_delays.year, 
-          flight_delays.month, 
-          flight_delays.day, 
-          flight_delays.manufacturer, 
-          flight_delays.tailnum, 
-          flight_delays.arr_delay 
-FROM      low_weather 
-LEFT JOIN flight_delays 
-ON        low_weather.origin = flight_delays.origin 
-AND       low_weather.day = flight_delays.day 
-AND       low_weather.month = flight_delays.month 
-INTO OUTFILE 'C:/Users/Praetor/OneDrive - CUNY School of Professional Studies/is362/lowtempanalysis.csv'
+SELECT w.temp, 
+       w.origin, 
+       Concat(w.month, '/', w.day, '/', w.year) AS wdate,
+       w.hour,
+       f.tailnum, 
+       IFNULL(f.arr_delay, 0), 
+       p.manufacturer 
+FROM   weather w 
+       LEFT OUTER JOIN flights f 
+                    ON w.origin = f.origin 
+                       AND w.day = f.day 
+                       AND w.month = f.month 
+					   and w.hour = f.hour
+                       and w.year = f.year
+       INNER JOIN planes p 
+               ON f.tailnum = p.tailnum
+               where w.year = '2013'
+               
+INTO OUTFILE 'C:/Users/Praetor/OneDrive - CUNY School of Professional Studies/is362/weatherdata.csv'
 FIELDS TERMINATED BY ','
 ENCLOSED BY '"'
-LINES TERMINATED BY '\n';
+LINES TERMINATED BY '\n'; 
+
+select * from weather;
