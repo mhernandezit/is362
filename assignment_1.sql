@@ -11,7 +11,7 @@ FROM   planes
 WHERE  speed IS NOT NULL;
 
 /*
-What is the total distance flown by all of the planes in January 2013?  
+2. What is the total distance flown by all of the planes in January 2013?  
 What is the total distance flown by all of the planes in January 2013 where the tailnum is missing?
 */
 WITH fullsum AS 
@@ -59,7 +59,7 @@ GROUP  BY planes.manufacturer
 ORDER  BY planes.manufacturer; 
 
 /*
-What was the lowest recorded temperature in 2013 for each origin airport, and how many delays were caused by the 
+4. What was the lowest recorded temperature in 2013 for each origin airport, and how many delays were caused by the 
 low temperatures.  Provide enough information to analyze delay information by Manufacturer, Origin, and Tail number.
 Export the result set to CSV
 */
