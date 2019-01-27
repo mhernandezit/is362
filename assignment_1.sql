@@ -36,7 +36,7 @@ Write this statement first using an INNER JOIN, then using a LEFT OUTER JOIN.
 How do your results compare? 
 */
 
-SELECT sum(flights.distance), 
+SELECT Sum(flights.distance), 
        planes.manufacturer 
 FROM   flights 
        INNER JOIN planes 
@@ -44,15 +44,60 @@ FROM   flights
 WHERE  flights.month = '7' 
        AND flights.day = '5' 
        AND flights.year = '2013' 
-GROUP  BY planes.manufacturer
-order by planes.manufacturer; 
+GROUP  BY planes.manufacturer 
+ORDER  BY planes.manufacturer; 
 
-SELECT sum(flights.distance), 
+SELECT Sum(flights.distance), 
        planes.manufacturer 
 FROM   flights 
-       left JOIN planes 
-               ON flights.tailnum = planes.tailnum 
+       LEFT JOIN planes 
+              ON flights.tailnum = planes.tailnum 
 WHERE  flights.month = '7' 
        AND flights.day = '5' 
        AND flights.year = '2013' 
-GROUP  BY planes.manufacturer; 
+GROUP  BY planes.manufacturer 
+ORDER  BY planes.manufacturer; 
+
+/*
+What was the lowest recorded temperature in 2013 for each origin airport, and how many delays were caused by the 
+low temperatures.  Provide enough information to analyze delay information by Manufacturer, Origin, and Tail number.
+Export the result set to CSV
+*/
+
+WITH low_weather AS 
+( 
+         SELECT   Min(weather.temp) AS min_temp, 
+                  weather.origin, 
+                  weather.day, 
+                  weather.month 
+         FROM     weather 
+         WHERE    year = '2013' 
+         GROUP BY origin), flight_delays AS 
+( 
+       SELECT origin, 
+              f.tailnum, 
+              manufacturer, 
+              f.year, 
+              f.month, 
+              f.day, 
+              arr_delay 
+       FROM   flights f 
+       JOIN   planes p 
+       ON     f.tailnum = p.tailnum) 
+SELECT    low_weather.min_temp, 
+          low_weather.origin, 
+          flight_delays.year, 
+          flight_delays.month, 
+          flight_delays.day, 
+          flight_delays.manufacturer, 
+          flight_delays.tailnum, 
+          flight_delays.arr_delay 
+FROM      low_weather 
+LEFT JOIN flight_delays 
+ON        low_weather.origin = flight_delays.origin 
+AND       low_weather.day = flight_delays.day 
+AND       low_weather.month = flight_delays.month 
+INTO OUTFILE 'C:/Users/Praetor/OneDrive - CUNY School of Professional Studies/is362/lowtempanalysis.csv'
+FIELDS TERMINATED BY ','
+ENCLOSED BY '"'
+LINES TERMINATED BY '\n';
