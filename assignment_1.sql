@@ -59,8 +59,9 @@ GROUP  BY planes.manufacturer
 ORDER  BY planes.manufacturer; 
 
 /*
-4. What was the lowest recorded temperature in January 2013 for each origin airport, and how many delays were caused by the 
-low temperatures.  Provide enough information to analyze delay information by Manufacturer, Origin, and Tail number.
+4. What were the minimum and maximum recorded temperatures in 2013 for EWR (the other origins do not have enough data to be 
+statistically significant), and how many delays were caused by the low temperatures?  
+Provide enough information to analyze delay information by Date, Manufacturer and Tail number.
 Export the result set to CSV
 */
 
@@ -80,11 +81,11 @@ FROM   weather w
                        and w.year = f.year
        INNER JOIN planes p 
                ON f.tailnum = p.tailnum
-               where w.year = '2013'
+               where w.year = '2013' and w.origin = 'EWR'
                
 INTO OUTFILE 'C:/Users/Praetor/OneDrive - CUNY School of Professional Studies/is362/weatherdata.csv'
 FIELDS TERMINATED BY ','
 ENCLOSED BY '"'
 LINES TERMINATED BY '\n'; 
 
-select * from weather;
+select temp, origin from weather where origin = 'JFK';
