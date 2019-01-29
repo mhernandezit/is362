@@ -59,33 +59,30 @@ GROUP  BY planes.manufacturer
 ORDER  BY planes.manufacturer; 
 
 /*
-4. What were the minimum and maximum recorded temperatures in 2013 for EWR (the other origins do not have enough data to be 
-statistically significant), and how many delays were caused by the low temperatures?  
+4. What were the minimum and maximum recorded temperatures in January 2013 for and how many delays were caused by the low 
+temperatures?  
 Provide enough information to analyze delay information by Date, Manufacturer and Tail number.
 Export the result set to CSV
 */
-
-SELECT w.temp, 
-       w.origin, 
+# The query here gathers all the weather data from January 2013, and joins it with the flights/planes tables
+# I'll use Tableau to find the lowest temperature/delay data
+SELECT w.temp,
+       w.origin,
        Concat(w.month, '/', w.day, '/', w.year) AS wdate,
        w.hour,
-       f.tailnum, 
+       f.tailnum,
        IFNULL(f.arr_delay, 0), 
        p.manufacturer 
 FROM   weather w 
        LEFT OUTER JOIN flights f 
-                    ON w.origin = f.origin 
-                       AND w.day = f.day 
+                    ON w.day = f.day 
                        AND w.month = f.month 
 					   and w.hour = f.hour
                        and w.year = f.year
        INNER JOIN planes p 
                ON f.tailnum = p.tailnum
-               where w.year = '2013' and w.origin = 'EWR'
-               
-INTO OUTFILE 'C:/Users/Praetor/OneDrive - CUNY School of Professional Studies/is362/weatherdata.csv'
+               where w.year = '2013' and w.month = '1'
+INTO OUTFILE 'C:/Users/Praetor/OneDrive - CUNY School of Professional Studies/is362/weatherdata1.csv'
 FIELDS TERMINATED BY ','
 ENCLOSED BY '"'
 LINES TERMINATED BY '\n'; 
-
-select temp, origin from weather where origin = 'JFK';
