@@ -59,13 +59,10 @@ GROUP  BY planes.manufacturer
 ORDER  BY planes.manufacturer; 
 
 /*
-4. What were the minimum and maximum recorded temperatures in January 2013 for and how many delays were caused by the low 
-temperatures?  
-Provide enough information to analyze delay information by Date, Manufacturer and Tail number.
+4. Is there a correlation between temperature and delays?  Is there a higher average delay in the summer or winter months?
+Are there any months which have a negative delay (more on time flights than delayed)?
 Export the result set to CSV
 */
-# The query here gathers all the weather data from January 2013, and joins it with the flights/planes tables
-# I'll use Tableau to find the lowest temperature/delay data
 SELECT w.temp,
        w.origin,
        Concat(w.month, '/', w.day, '/', w.year) AS wdate,
@@ -81,8 +78,8 @@ FROM   weather w
                        and w.year = f.year
        INNER JOIN planes p 
                ON f.tailnum = p.tailnum
-               where w.year = '2013' and w.month = '1'
-INTO OUTFILE 'C:/Users/Praetor/OneDrive - CUNY School of Professional Studies/is362/weatherdata1.csv'
+               where w.year = '2013'
+INTO OUTFILE 'C:/Users/Praetor/OneDrive - CUNY School of Professional Studies/is362/weatherdata.csv'
 FIELDS TERMINATED BY ','
 ENCLOSED BY '"'
 LINES TERMINATED BY '\n'; 
